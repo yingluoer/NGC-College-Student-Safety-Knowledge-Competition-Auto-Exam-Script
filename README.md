@@ -1,4 +1,4 @@
-# 南京工程学院 · 大学生安全知识竞赛测试
+# 南京工程学院 · 大学生安全知识竞赛速刷
 
 南京工程学院安全知识竞赛的自动答题程序。CDP 直连浏览器，题库匹配，自动作答，自动交卷。
 
@@ -32,7 +32,7 @@
 
 ## 下载
 
-[Releases](../../releases) 里的 `NGC-Safety-Exam-Speedrun.exe`，约 92 MB。
+[Releases](../../releases) 里的 `NGC-AQJS.exe`，约 92 MB。
 
 单文件。不装 Python，不装 Chrome，双击运行。
 
