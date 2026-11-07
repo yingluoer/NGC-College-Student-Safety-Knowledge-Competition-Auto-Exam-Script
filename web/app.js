@@ -5,8 +5,7 @@
     link: $('#linkState'), bank: $('#bankCount'), elapsed: $('#elapsed'), clock: $('#clock'),
     phase: $('#phaseText'), statusMsg: $('#statusMsg'),
     school: $('#fSchool'), user: $('#fUser'), pass: $('#fPass'),
-    delay: $('#fDelay'), miss: $('#fMiss'),
-    btnLaunch: $('#btnLaunch'), btnLogin: $('#btnLogin'), btnRefresh: $('#btnRefresh'),
+    btnLaunch: $('#btnLaunch'), btnLogin: $('#btnLogin'),
     btnRun: $('#btnRun'), btnPause: $('#btnPause'), btnStop: $('#btnStop'),
     btnExport: $('#btnExport'), btnClearLog: $('#btnClearLog'),
     captchaImg: $('#captchaImg'), captchaMask: $('#captchaMask'), code: $('#fCode'),
@@ -174,8 +173,6 @@
     if (s.school) el.school.value = s.school;
     if (s.user) el.user.value = s.user;
     if (s.password) el.pass.value = s.password;
-    if (s.delay !== undefined) el.delay.value = Math.round(s.delay * 1000);
-    if (s.on_miss) el.miss.value = s.on_miss;
     if (s.auto_submit !== undefined) el.tAuto.checked = !!s.auto_submit;
     if (st.textbank !== undefined && el.bankText) el.bankText.textContent = st.textbank;
     if (s.auto_captcha !== undefined) el.tOcr.checked = !!s.auto_captcha;
@@ -224,8 +221,8 @@
       school: el.school.value.trim(),
       user: el.user.value.trim(),
       password: el.pass.value,
-      delay: Math.max(0, Number(el.delay.value) || 300) / 1000,
-      on_miss: el.miss.value,
+      delay: 0.3,
+      on_miss: 'first',
       headless: false,
     };
     if (!body.school) { addLog('error', '先填学校全称'); el.school.focus(); return; }
@@ -242,7 +239,8 @@
     }, 1200);
   };
 
-  el.btnRefresh.onclick = () => post('/api/captcha');
+
+  document.getElementById('captchaWrap').onclick = () => post('/api/captcha');
 
   el.btnLogin.onclick = async () => {
     const code = el.code.value.trim();
@@ -301,7 +299,7 @@
       addLog('info', MODE_HINT[b.dataset.mode] || '');
     };
   });
-  el.fTarget.onchange = () => post('/api/settings', { target: Math.max(80, Math.min(92, Number(el.fTarget.value) || 84)) });
+  el.fTarget.onchange = () => post('/api/settings', { target: Math.max(80, Math.min(100, Number(el.fTarget.value) || 84)) });
   const pushCustom = () => {
     let lo = Math.max(0.5, Number(el.fSpeedMin.value) || 3);
     let hi = Math.max(0.5, Number(el.fSpeedMax.value) || 10);
@@ -361,10 +359,10 @@
     school: el.school.value.trim(),
     user: el.user.value.trim(),
     password: el.pass.value,
-    delay: Math.max(0, Number(el.delay.value) || 300) / 1000,
-    on_miss: el.miss.value,
+    delay: 0.3,
+    on_miss: 'first',
   });
-  [el.school, el.user, el.pass, el.delay, el.miss].forEach((i) => i.addEventListener('change', syncSettings));
+  [el.school, el.user, el.pass].forEach((i) => i.addEventListener('change', syncSettings));
 
   connect();
   fetch('/api/state').then((r) => r.json()).then(fullRender).catch(() => {});
