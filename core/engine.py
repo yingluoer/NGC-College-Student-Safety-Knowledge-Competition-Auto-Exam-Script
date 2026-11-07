@@ -802,11 +802,14 @@ class Engine:
 
         if mode == "custom":
             acc = float(self.settings.get("accuracy") or 85)
-            ceiling = min(96, int(acc) + 6)
-            floor = max(80, int(acc) - 6)
+            # 不设人为上限：用户填 99 就该答对 99 题，之前卡 min(96, acc+6)
+            # 导致 99% 只给到 96，白丢 3 题
+            ceiling = 100
+            floor = max(80, int(acc) - 5)
         else:
             ceiling = int(self.settings.get("ceiling") or 92)
             floor = int(self.settings.get("floor") or 80)
+            ceiling = max(ceiling, target)   # 目标高于 92 时以目标为准，别把人卡在 92
 
         remaining = total - idx + 1
         need = target - right
