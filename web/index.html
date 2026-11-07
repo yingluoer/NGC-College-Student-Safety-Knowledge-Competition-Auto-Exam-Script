@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGC · 大学生安全知识竞赛速刷</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <path d="M4 20 L20 4 L36 20 L20 36 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M13 20 L20 13 L27 20 L20 27 Z" fill="currentColor" opacity=".85"/>
+    </svg>
+    <div class="brand-txt">
+      <h1>NGC<span class="slash">//</span>SPEEDRUN</h1>
+      <p>大学生安全知识竞赛 · 速刷终端 v1.2</p>
+    </div>
+  </div>
+  <div class="topmeta">
+    <div class="meta-item"><label>LINK</label><b id="linkState" class="warn">STANDBY</b></div>
+    <div class="meta-item"><label>BANK</label><b id="bankCount">0</b></div>
+    <div class="meta-item"><label>T+</label><b id="elapsed">00:00</b></div>
+    <div class="meta-item clock"><label>SYS</label><b id="clock">--:--:--</b></div>
+  </div>
+</header>
+
+<main>
+  
+  <section class="col col-left">
+    <div class="panel" data-idx="01">
+      <div class="panel-head"><h2>接入参数</h2><span class="tag">PARAM</span></div>
+      <div class="fields">
+        <label class="field">
+          <span>学校</span>
+          <input id="fSchool" type="text" value="" placeholder="输入学校全称" spellcheck="false">
+        </label>
+        <label class="field">
+          <span>学号</span>
+          <input id="fUser" type="text" placeholder="本人学号" spellcheck="false">
+        </label>
+        <label class="field">
+          <span>密码</span>
+          <input id="fPass" type="text" value="" placeholder="输入密码" spellcheck="false">
+        </label>
+        <div class="field-row">
+          <label class="field sm">
+            <span>间隔 ms</span>
+            <input id="fDelay" type="number" value="300" min="0" max="5000" step="50">
+          </label>
+          <label class="field sm">
+            <span>未命中</span>
+            <select id="fMiss">
+              <option value="first">选首个</option>
+              <option value="skip">跳过</option>
+              <option value="stop">停止</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <button id="btnLaunch" class="btn primary block">
+        <span class="bnum">▶</span> 启动浏览器并接入
+      </button>
+      <p class="hint">启动后自动填入学校/学号/密码，验证码由你手动识别。</p>
+    </div>
+
+    <div class="panel" data-idx="02">
+      <div class="panel-head"><h2>答题策略</h2><span class="tag">MODE</span></div>
+      <div class="modes">
+        <button class="btn strat active" data-mode="top"><b>速刷全对</b><i>100 分</i></button>
+        <button class="btn strat" data-mode="pass"><b>控分速刷</b><i>只求合格</i></button>
+        <button class="btn strat" data-mode="real"><b>控分拟真</b><i>3~10s/题</i></button>
+        <button class="btn strat" data-mode="custom"><b>自定义</b><i>自定速度</i></button>
+      </div>
+    <div class="panel" data-idx="03">
+      <div class="panel-head"><h2>身份验证</h2><span class="tag">AUTH</span></div>
+      <div class="captcha-box">
+        <div class="captcha-img" id="captchaWrap">
+          <img id="captchaImg" alt="验证码">
+          <div class="captcha-mask" id="captchaMask">NO SIGNAL</div>
+        </div>
+        <button id="btnRefresh" class="btn ghost sq" title="刷新验证码">↻</button>
+      </div>
+      <div class="inline-row">
+        <input id="fCode" class="code" type="text" maxlength="6" placeholder="验证码" spellcheck="false" autocomplete="off">
+        <button id="btnLogin" class="btn primary">登录</button>
+      </div>
+      <label class="chk ocr"><input type="checkbox" id="tOcr" checked><span></span>自动识别验证码（ddddocr）</label>
+      <p class="hint">开启后自动识别并登录，识别错会自己换一张重试；关掉则手动输入。</p>
+    </div>
+    <div class="panel" data-idx="04">
+      <div class="panel-head"><h2>模块</h2><span class="tag">MODULE</span></div>
+      <div class="modules">
+        <button class="btn mod" data-mod="seq"><b>顺序练习</b><i>1000</i></button>
+        <button class="btn mod" data-mod="rand"><b>随机练习</b><i>SHUFFLE</i></button>
+        <button class="btn mod" data-mod="mock"><b>模拟考试</b><i>100/30min</i></button>
+        <button class="btn mod danger" data-mod="exam"><b>正式考试</b><i>LIVE</i></button>
+      </div>
+    </div>
+
+      <div class="target-row">
+        <label>目标分</label>
+        <input id="fTarget" type="number" min="80" max="92" step="1" value="84">
+        <span class="unit">/100</span>
+      </div>
+
+      <div class="custom-box" id="customBox">
+        <div class="target-row">
+          <label>每题</label>
+          <input id="fSpeedMin" type="number" min="0.5" max="60" step="0.5" value="3">
+          <span class="unit">~</span>
+          <input id="fSpeedMax" type="number" min="0.5" max="60" step="0.5" value="10">
+          <span class="unit">秒</span>
+        </div>
+        <div class="target-row">
+          <label>正确率</label>
+          <input id="fAcc" type="number" min="80" max="100" step="1" value="85">
+          <span class="unit">% 以上</span>
+        </div>
+      </div>
+
+      <p class="hint" id="modeHint">合格 80，评奖 96。所有模式都会按考试剩余时间自动压缩节奏，保证倒计时内答完。</p>
+    </div>
+
+    <div class="sig">
+      <div class="sig-txt">
+        <span>SAFETY / 15TH</span><b>O.M.V.</b>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="col col-mid">
+    <div class="panel question-panel" data-idx="05">
+      <div class="panel-head">
+        <h2>当前题目</h2>
+        <div class="qmeta">
+          <span class="chip" id="qType">TYPE</span>
+          <span class="chip ans" id="qAns"></span>
+          <span class="chip" id="qHow">MATCH</span>
+        </div>
+      </div>
+      <div class="qbody">
+        <p class="qtext" id="qText">等待接入…</p>
+        <div class="options" id="qOptions"></div>
+      </div>
+      <div class="qempty" id="qEmpty">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width=".8" opacity=".35"/>
+          <circle cx="60" cy="60" r="30" fill="none" stroke="currentColor" stroke-width=".8" opacity=".22"/>
+          <circle cx="60" cy="60" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M60 6v22M60 92v22M6 60h22M92 60h22" stroke="currentColor" stroke-width=".8" opacity=".3"/>
+          <path d="M14 14l10 10M106 14l-10 10M14 106l10-10M106 106l-10-10" stroke="currentColor" stroke-width=".8" opacity=".16"/>
+        </svg>
+        <span>NO SIGNAL / 等待题目</span>
+      </div>
+      <div class="runbar">
+        <button id="btnRun" class="btn primary"><span class="bnum">▶</span> 开始答题</button>
+        <button id="btnPause" class="btn ghost" disabled>暂停</button>
+        <button id="btnStop" class="btn ghost danger" disabled>停止</button>
+        <label class="chk"><input type="checkbox" id="tAuto"><span></span>自动交卷</label>
+        <span class="runtip" id="runTip"></span>
+      </div>
+    </div>
+
+    <div class="panel log-panel" data-idx="06">
+      <div class="panel-head">
+        <h2>运行日志</h2>
+        <button class="mini" id="btnClearLog">CLEAR</button>
+      </div>
+      <div class="logs" id="logs"></div>
+    </div>
+  </section>
+
+  
+  <section class="col col-right">
+    <div class="panel" data-idx="07">
+      <div class="panel-head"><h2>运行统计</h2><span class="tag">STAT</span></div>
+      <div class="stats">
+        <div class="stat"><label>已答</label><b id="sAnswered">0</b></div>
+        <div class="stat"><label>预计得分</label><b id="sRight" class="ok">0</b></div>
+        <div class="stat"><label>故意错</label><b id="sWrong" class="cyan">0</b></div>
+        <div class="stat"><label>未命中</label><b id="sMiss" class="bad">0</b></div>
+      </div>
+      <div class="meter">
+        <div class="meter-row"><label>题库命中</label><span id="hitRate">0.0%</span></div>
+        <div class="meter-bar"><i id="hitBar"></i></div>
+      </div>
+      <button id="btnExport" class="btn ghost block sm">导出未命中题目</button>
+    </div>
+
+    <div class="panel" data-idx="08">
+      <div class="panel-head"><h2>题库</h2><span class="tag">BANK</span></div>
+      <div class="bank-row">
+        <div class="bank-num"><b id="bankText">0</b><i>题 · 官方答案</i></div>
+        <button id="btnUpdateBank" class="btn ghost sm" disabled>更新题库</button>
+      </div>
+      <p class="hint" id="bankHint">登录后可点「更新题库」：自动进入顺序练习逐题抓取官方答案，约 10 分钟。</p>
+    </div>
+
+    <div class="panel shot-panel" data-idx="09">
+      <div class="panel-head">
+        <h2>实时画面</h2>
+        <label class="toggle"><input type="checkbox" id="tShot" checked><span></span></label>
+      </div>
+      <div class="shot" id="shotWrap"><img id="shotImg" alt=""><div class="shot-empty">OFFLINE</div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="statusbar">
+  <div class="sb-left"><span class="blink"></span><b id="phaseText">IDLE</b></div>
+  <div class="sb-mid" id="statusMsg">等待启动</div>
+  <div class="sb-right">NGC-SPEEDRUN v1.2 · LOCAL</div>
+</footer>
+
+<div class="modal-mask" id="noticeMask">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>NOTICE <span class="slash">//</span> 使用须知</h3>
+      <span class="m-ver">v1.2</span>
+    </div>
+    <div class="modal-body">
+      <div class="notice-txt">
+        <p><b>NGC · 大学生安全知识竞赛速刷</b> 由作者 <b>璎珞</b> 开发，已在 GitHub 开源。</p>
+        <p>本项目仅供<b>网页自动化与安全性测试</b>等技术学习用途，任何人不得将其用于任何<b>盈利活动或违法行为</b>。</p>
+        <p>本程序按「现状」（AS IS）提供，不作任何明示或默示的可用性、稳定性、合规性担保。因下载、使用或无法使用本程序产生的任何直接或间接后果 —— 包括但不限于成绩作废、账号处罚、纪律处分及法律责任 —— 均由使用者<b>自行承担，开发者概不负责</b>。请使用前自行确认所在院校相关规定与平台用户协议，并确保操作对象为本人账号。</p>
+        <p>程序不采集、不上传任何个人信息；账号、会话与导出文件仅保存在本机，退出时自动清理。作者保留随时修改、暂停或终止更新的权利，且不承担技术支持义务。<b>下载、运行即视为已阅读并接受本声明。</b></p>
+      </div>
+      <div class="donate">
+        <img src="/donate.jpg" alt="赞赏码">
+        <p>如需支持作者，可扫描上方赞赏码 · 感谢每一个 star ⭐</p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="btnAgree" class="btn primary block">我已阅读并同意 · 进入终端</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
